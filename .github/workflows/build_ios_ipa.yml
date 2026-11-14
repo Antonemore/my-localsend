@@ -1,0 +1,53 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env:
+  FLUTTER_VERSION: "3.47.9"
+
+jobs:
+  build_ios:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios, x86_64-apple-ios
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: Build iOS App (No Codesign)
+        working-directory: app
+        run: |
+          flutter build ios --release --no-codesign
+
+      - name: Package IPA
+        working-directory: app
+        run: |
+          mkdir -p Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -qr LocalSend-Custom-iOS.ipa Payload
+          rm -rf Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalSend-Custom-iOS-IPA
+          path: app/LocalSend-Custom-iOS.ipa
+          retention-days: 7
