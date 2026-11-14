@@ -42,6 +42,31 @@ export interface ChatChannel {
   total_size_bytes: number;
 }
 
+export type ChatFileType = 'cad' | 'excel' | 'pdf' | 'word' | 'image' | 'video' | 'archive';
+
+export interface ChatMediaItem {
+  id: string;
+  channel_id: string;
+  name: string;
+  file_type: ChatFileType;
+  size_bytes: number;
+  timestamp: string; // ISO string
+  date_group: string; // e.g. "Hôm nay (14/11/2026)", "Hôm qua (13/11/2026)"
+  time_str: string;   // e.g. "09:42 SA"
+  sender: string;
+  is_live_photo?: boolean;
+}
+
+export interface FileItemInfo {
+  id: string;
+  name: string;
+  path: string;
+  size_bytes: number;
+  modified_at: string;
+  is_dir: boolean;
+  file_type: 'file' | 'folder' | 'image' | 'video' | 'pdf' | 'doc' | 'archive';
+}
+
 export interface FileNode {
   name: string;
   path: string;
@@ -51,6 +76,6 @@ export interface FileNode {
   children?: FileNode[];
 }
 
-export type NavTab = 'photos' | 'chats' | 'cleaner' | 'files' | 'clipboard' | 'settings';
+export type NavTab = 'dual_explorer' | 'photos' | 'chats' | 'cleaner' | 'files' | 'clipboard' | 'settings';
 export type ViewMode = 'grid-large' | 'grid-small' | 'view-detail';
 export type AppTheme = 'itunes' | 'dark';

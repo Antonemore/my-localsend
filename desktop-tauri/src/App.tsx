@@ -4,9 +4,20 @@ import { PhotoGrid } from './components/PhotoGrid';
 import { FileExplorer } from './components/FileExplorer';
 import { ChatMediaManager } from './components/ChatMediaManager';
 import { CleanerManager } from './components/CleanerManager';
+import { DualPaneExplorer } from './components/DualPaneExplorer';
 import { DonationModal } from './components/DonationModal';
 import { PairingHandshakeModal } from './components/PairingHandshakeModal';
-import { DeviceInfo, NavTab, PhotoItem, FileNode, ChatChannel, AppTheme, ConnectionState } from './types';
+import {
+  DeviceInfo,
+  NavTab,
+  PhotoItem,
+  FileNode,
+  ChatChannel,
+  AppTheme,
+  ConnectionState,
+  FileItemInfo,
+  ChatMediaItem,
+} from './types';
 import { Wifi, WifiOff, KeyRound, ShieldCheck } from 'lucide-react';
 
 const REALISTIC_DEVICE: DeviceInfo = {
@@ -159,7 +170,7 @@ const MOCK_FILES: FileNode = {
 };
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<NavTab>('photos');
+  const [activeTab, setActiveTab] = useState<NavTab>('dual_explorer');
   const [isDonateOpen, setIsDonateOpen] = useState<boolean>(false);
   const [isPairModalOpen, setIsPairModalOpen] = useState<boolean>(false);
   const [theme, setTheme] = useState<AppTheme>('itunes');
@@ -219,6 +230,29 @@ export const App: React.FC = () => {
   const handleCleanItem = (type: string, sizeBytes: number) => {
     const gb = (sizeBytes / (1024 * 1024 * 1024)).toFixed(2);
     alert(`Đã dọn dẹp và giải phóng ${gb} GB từ mục [${type}]!`);
+  };
+
+  // Handlers cho Dual-Pane Explorer
+  const handleExportToPc = (files: FileItemInfo[], deleteFromPhoneAfter: boolean) => {
+    const delMsg = deleteFromPhoneAfter ? ' và đã xóa trên iPhone để giải phóng dung lượng' : '';
+    alert(`Đã sao chép thành công ${files.length} tệp sang PC (${downloadFolder})${delMsg}!`);
+  };
+
+  const handleImportToPhone = (files: FileItemInfo[]) => {
+    alert(`Đã nạp thành công ${files.length} tệp từ PC vào bộ nhớ iPhone!`);
+  };
+
+  const handleDeletePhoneFiles = (files: FileItemInfo[]) => {
+    alert(`Đã xóa ${files.length} tệp trên iPhone!`);
+  };
+
+  // Handlers cho Chat Files
+  const handleExportChatFiles = (files: ChatMediaItem[]) => {
+    alert(`Đang sao lưu ${files.length} tệp chat được chọn về thư mục PC:\n${downloadFolder}\\Chat_Exports\\`);
+  };
+
+  const handleDeleteChatFiles = (files: ChatMediaItem[]) => {
+    alert(`Đã xóa thành công ${files.length} tệp chat trên iPhone để giải phóng bộ nhớ!`);
   };
 
   const handleUploadFiles = async (files: FileList | string[]) => {
@@ -304,6 +338,16 @@ export const App: React.FC = () => {
           </div>
         </div>
 
+        {/* Render Tab Contents */}
+        {activeTab === 'dual_explorer' && (
+          <DualPaneExplorer
+            onExportToPc={handleExportToPc}
+            onImportToPhone={handleImportToPhone}
+            onDeletePhoneFiles={handleDeletePhoneFiles}
+            pcDirectory={downloadFolder}
+          />
+        )}
+
         {activeTab === 'photos' && (
           <PhotoGrid
             photos={SAMPLE_PHOTOS}
@@ -314,6 +358,8 @@ export const App: React.FC = () => {
         {activeTab === 'chats' && (
           <ChatMediaManager
             onExportChannel={handleExportChannel}
+            onExportChatFiles={handleExportChatFiles}
+            onDeleteChatFiles={handleDeleteChatFiles}
           />
         )}
 

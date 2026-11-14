@@ -18,6 +18,7 @@ import {
   RefreshCw,
   ShieldCheck,
   KeyRound,
+  ArrowLeftRight,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -219,6 +220,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Navigation Menu */}
         <nav className="px-2 space-y-1">
+          <button
+            onClick={() => onTabChange('dual_explorer')}
+            className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+              activeTab === 'dual_explorer'
+                ? 'font-semibold border-l-2'
+                : 'hover:opacity-80'
+            }`}
+            style={{
+              backgroundColor: activeTab === 'dual_explorer' ? 'rgba(0, 113, 227, 0.12)' : 'transparent',
+              color: activeTab === 'dual_explorer' ? 'var(--accent)' : 'var(--text-secondary)',
+              borderColor: activeTab === 'dual_explorer' ? 'var(--accent)' : 'transparent',
+            }}
+          >
+            <div className="flex items-center gap-2.5">
+              <ArrowLeftRight className="w-4 h-4 text-sky-500" />
+              <span>Quản lý Song Hành (PC ⇋ Phone)</span>
+            </div>
+            <span className="text-[9px] bg-sky-500/15 text-sky-500 px-1.5 py-0.5 rounded-full font-bold">
+              2 CHIỀU
+            </span>
+          </button>
+
           <button
             onClick={() => onTabChange('photos')}
             className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
