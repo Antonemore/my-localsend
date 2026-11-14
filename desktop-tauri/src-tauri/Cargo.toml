@@ -1,0 +1,21 @@
+[package]
+name = "send2all-desktop"
+version = "0.1.0"
+description = "Desktop client for Send2All"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2.0.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0.0", features = [] }
+tauri-plugin-drag = "2.0.0"
+tauri-plugin-fs = "2.0.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.38", features = ["full"] }
+reqwest = { version = "0.12", features = ["json", "stream", "multipart"] }
+futures-util = "0.3"
+send2all-core = { path = "../../core-rust" }
+tracing = "0.1"
+tracing-subscriber = "0.3"
