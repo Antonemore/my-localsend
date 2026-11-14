@@ -33,12 +33,13 @@ jobs:
         working-directory: desktop-tauri
         run: npm run build
 
-      - name: Build Windows Tauri Executable and Installer
+      - name: Build Windows Tauri App
         working-directory: desktop-tauri
         run: |
-          npx @tauri-apps/cli build
+          npx @tauri-apps/cli build --verbose
 
-      - name: Upload Windows Installer and Exe
+      - name: Upload Windows PC Artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Send2All-Windows-PC

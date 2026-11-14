@@ -88,7 +88,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
                   // Kích hoạt Native Drag-out sang Windows Explorer qua Tauri Command
                   try {
                     const { invoke } = await import('@tauri-apps/api/core');
-                    await invoke('start_native_drag_out', {
+                    await invoke('prepare_file_for_drag', {
                       photoId: item.id,
                       filename: item.filename,
                     });

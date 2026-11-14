@@ -148,26 +148,27 @@ pub async fn export_photos_to_pc(
     Ok(successful_exports)
 }
 
-/// Kích hoạt Native Drag-out sang Windows Explorer qua plugin `tauri-plugin-drag`
+/// Chuẩn bị tệp tải về máy tính để kéo thả hoặc xuất ra ngoài
 #[tauri::command]
-pub async fn start_native_drag_out(
+pub async fn prepare_file_for_drag(
     app: AppHandle,
     photo_id: String,
     filename: String,
     state: State<'_, DesktopClientState>,
-) -> Result<(), String> {
-    // 1. Chuẩn bị file tạm trong App Cache
+) -> Result<String, String> {
+    // 1. Chuẩn bị file trong thư mục App Cache
     let cache_dir = app.path().app_cache_dir().map_err(|e| e.to_string())?;
+    tokio::fs::create_dir_all(&cache_dir).await.map_err(|e| e.to_string())?;
     let temp_file = cache_dir.join(&filename);
 
-    // 2. Tải nhanh file gốc từ iPhone vào temp nếu chưa có
+    // 2. Tải file gốc từ iPhone vào cache nếu chưa có
     if !temp_file.exists() {
         let ip = state
             .paired_device_ip
             .read()
             .await
             .clone()
-            .ok_or_else(|| "Chưa kết nối".to_string())?;
+            .ok_or_else(|| "Chưa kết nối thiết bị".to_string())?;
 
         let url = format!("https://{}:53318/api/v1/photos/{}/original", ip, photo_id);
         let res = state
@@ -183,18 +184,8 @@ pub async fn start_native_drag_out(
             .map_err(|e| e.to_string())?;
     }
 
-    // 3. Gọi plugin Drag native của Tauri v2 để Windows Explorer hứng file thực tế
-    info!("Kích hoạt Native Drag ra Windows Explorer cho: {:?}", temp_file);
-    let item_paths = vec![temp_file.to_string_lossy().to_string()];
-    
-    // Gọi tauri_plugin_drag::start_drag
-    tauri_plugin_drag::start_drag(
-        &app.get_webview_window("main").unwrap(),
-        item_paths,
-        None,
-    ).map_err(|e| e.to_string())?;
-
-    Ok(())
+    info!("Đã chuẩn bị file sẵn sàng: {:?}", temp_file);
+    Ok(temp_file.to_string_lossy().to_string())
 }
 
 /// Đẩy tệp kéo thả từ PC lên iPhone (POST /api/v1/files/upload)
