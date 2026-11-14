@@ -70,7 +70,7 @@ async fn handle_pairing(
 
 /// Lấy thông tin thiết bị (Pin, dung lượng, phiên bản)
 async fn handle_device_info(State(state): State<AppState>) -> impl IntoResponse {
-    Json(&*state.device_info)
+    Json((*state.device_info).clone())
 }
 
 /// Lấy danh sách ảnh từ PhotoKit có phân trang
@@ -214,8 +214,8 @@ async fn handle_file_download(
 
 /// Tiếp nhận tệp tải lên từ PC kéo thả vào (Multipart Streaming)
 async fn handle_file_upload(
-    mut multipart: Multipart,
     State(_state): State<AppState>,
+    mut multipart: Multipart,
 ) -> Result<StatusCode, (StatusCode, String)> {
     while let Some(field) = multipart
         .next_field()
