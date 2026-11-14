@@ -36,7 +36,7 @@ jobs:
       - name: Build Windows Tauri App
         working-directory: desktop-tauri
         run: |
-          npx @tauri-apps/cli build --verbose
+          npx @tauri-apps/cli build --verbose 2>&1 | Tee-Object -FilePath build_windows.log
 
       - name: Upload Windows PC Artifacts
         if: always()
@@ -44,7 +44,7 @@ jobs:
         with:
           name: Send2All-Windows-PC
           path: |
+            desktop-tauri/build_windows.log
             desktop-tauri/src-tauri/target/release/send2all-desktop.exe
             desktop-tauri/src-tauri/target/release/bundle/nsis/*.exe
-            desktop-tauri/src-tauri/target/release/bundle/msi/*.msi
           retention-days: 7
