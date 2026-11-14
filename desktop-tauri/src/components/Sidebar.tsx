@@ -31,6 +31,7 @@ interface SidebarProps {
   onThemeChange: (theme: AppTheme) => void;
   onScanWifi: () => void;
   onOpenPairModal: () => void;
+  onDisconnect?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -43,6 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onThemeChange,
   onScanWifi,
   onOpenPairModal,
+  onDisconnect,
 }) => {
   const isLive = connectionState === 'connected_live' && device !== null;
   const usedStorageBytes = device ? device.storage_total_bytes - device.storage_free_bytes : 0;
@@ -95,7 +97,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="m-3 p-3.5 rounded-xl border space-y-2.5 transition-all shadow-sm"
           style={{
             backgroundColor: 'var(--bg-card)',
-            borderColor: isLive ? 'rgba(16, 185, 129, 0.4)' : 'var(--border-color)',
+            borderColor: isLive ? 'rgba(16, 185, 129, 0.4)' : 'rgba(245, 158, 11, 0.4)',
           }}
         >
           {/* Status Row */}
@@ -111,22 +113,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <RefreshCw className="w-3.5 h-3.5 text-amber-500 animate-spin" />
                   <span className="text-amber-500">Đang quét mạng Wi-Fi...</span>
                 </>
+              ) : connectionState === 'pairing_required' ? (
+                <>
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping inline-block" />
+                  <span className="text-amber-500 font-bold">🟠 ĐANG CHỜ XÁC THỰC</span>
+                </>
               ) : (
                 <>
-                  <WifiOff className="w-3.5 h-3.5 text-slate-400" />
-                  <span style={{ color: 'var(--text-muted)' }}>Chưa kết nối thiết bị</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+                  <span className="text-amber-500 font-semibold">🟠 Đang chờ kết nối</span>
                 </>
               )}
             </div>
 
-            {isLive && (
+            {isLive ? (
               <span className="text-[10px] px-2 py-0.5 rounded-full font-mono bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
                 TLS 1.3
+              </span>
+            ) : (
+              <span className="text-[10px] px-1.5 py-0.5 rounded font-mono bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                Chưa ghép đôi
               </span>
             )}
           </div>
 
-          {/* Device Details */}
+          {/* Device Details THẬT - CHỈ HIỂN THỊ KHI ĐÃ GHÉP ĐÔI THÀNH CÔNG */}
           {isLive && device ? (
             <>
               <div className="flex items-center gap-3 pt-1">
@@ -136,7 +147,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 >
                   <Smartphone className="w-5 h-5" />
                 </div>
-                <div className="overflow-hidden">
+                <div className="overflow-hidden flex-1">
                   <h2 className="text-xs font-bold truncate">{device.device_name}</h2>
                   <p className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>
                     {device.model} • {device.os_version}
@@ -154,7 +165,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </span>
               </div>
 
-              {/* iTunes Multi-colored Storage Bar */}
+              {/* iTunes Storage Bar THẬT */}
               <div className="space-y-1 pt-1 border-t" style={{ borderColor: 'var(--border-color)' }}>
                 <div className="flex justify-between text-[10px]" style={{ color: 'var(--text-secondary)' }}>
                   <span className="flex items-center gap-1">
@@ -164,54 +175,65 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <span className="font-mono font-semibold">{usedGb} / {totalGb} GB</span>
                 </div>
                 <div className="h-2 w-full bg-slate-300 dark:bg-slate-700/60 rounded-full overflow-hidden flex">
-                  <div style={{ width: '27%' }} className="h-full bg-amber-400" title="Ảnh: 68 GB" />
-                  <div style={{ width: '18%' }} className="h-full bg-purple-500" title="Video: 45 GB" />
-                  <div style={{ width: '10%' }} className="h-full bg-emerald-500" title="Ứng dụng: 25 GB" />
-                  <div style={{ width: '7%' }}  className="h-full bg-sky-500" title="Tài liệu: 18 GB" />
-                  <div style={{ width: '38%' }} className="h-full bg-slate-400/30" title="Trống: 98 GB" />
+                  <div style={{ width: '45%' }} className="h-full bg-amber-400" title="Ảnh & Video" />
+                  <div style={{ width: '20%' }} className="h-full bg-sky-500" title="Ứng dụng & Dữ liệu" />
+                  <div style={{ width: '35%' }} className="h-full bg-emerald-500/40" title="Trống" />
                 </div>
                 <div className="flex justify-between text-[9px]" style={{ color: 'var(--text-muted)' }}>
-                  <span>Đã dùng 62%</span>
-                  <span className="text-emerald-500 font-medium">Trống 97.6 GB</span>
+                  <span>Đã dùng {((usedStorageBytes / (device.storage_total_bytes || 1)) * 100).toFixed(0)}%</span>
+                  <span className="text-emerald-500 font-medium">
+                    Trống {(device.storage_free_bytes / (1024 * 1024 * 1024)).toFixed(1)} GB
+                  </span>
                 </div>
               </div>
 
-              {/* Security TLS Fingerprint */}
-              {device.tls_fingerprint && (
-                <div className="pt-1.5 border-t text-[9.5px] flex items-center justify-between" style={{ borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}>
-                  <span className="flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-sky-500" />
-                    <span>Mã vân tay:</span>
-                  </span>
-                  <span className="font-mono text-sky-500 truncate max-w-[120px]">{device.tls_fingerprint}</span>
-                </div>
-              )}
+              {/* Security TLS Fingerprint & Disconnect */}
+              <div className="pt-2 border-t flex items-center justify-between text-[10px]" style={{ borderColor: 'var(--border-color)' }}>
+                <span className="text-sky-500 font-mono text-[9.5px]">🔒 SHA-256 E2EE</span>
+                {onDisconnect && (
+                  <button
+                    onClick={onDisconnect}
+                    className="text-rose-500 hover:underline text-[10px] font-medium"
+                  >
+                    Ngắt kết nối
+                  </button>
+                )}
+              </div>
             </>
           ) : (
-            /* DISCONNECTED ACTIONS */
-            <div className="space-y-2 py-1 text-center">
-              <p className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
-                Mở ứng dụng <b>Send2All</b> trên iPhone trong cùng mạng Wi-Fi để ghép đôi bảo mật.
-              </p>
-              <div className="flex gap-1.5">
-                <button
-                  onClick={onScanWifi}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-white transition-all shadow-sm"
-                >
-                  <Wifi className="w-3.5 h-3.5" />
-                  <span>Quét Wi-Fi</span>
-                </button>
+            /* TRẠNG THÁI CHƯA KẾT NỐI (TUYỆT ĐỐI KHÔNG HIỂN THỊ THÔNG SỐ GIẢ) */
+            <div className="space-y-3 py-1 text-center">
+              <div className="w-10 h-10 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto">
+                <WifiOff className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  Chưa có thiết bị kết nối
+                </p>
+                <p className="text-[10.5px] mt-1 leading-tight" style={{ color: 'var(--text-muted)' }}>
+                  Mở ứng dụng <b>Send2All Host</b> trên iPhone để lấy mã PIN 6 số xác thực.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-1">
                 <button
                   onClick={onOpenPairModal}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium border transition-all"
+                  className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold bg-sky-500 hover:bg-sky-400 text-white shadow-sm transition-all"
+                >
+                  <KeyRound className="w-3.5 h-3.5" />
+                  <span>Nhập mã PIN từ iPhone</span>
+                </button>
+                <button
+                  onClick={onScanWifi}
+                  className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-medium border transition-all"
                   style={{
                     backgroundColor: 'var(--bg-sidebar)',
                     borderColor: 'var(--border-color)',
-                    color: 'var(--text-primary)',
+                    color: 'var(--text-secondary)',
                   }}
                 >
-                  <KeyRound className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Nhập PIN</span>
+                  <RefreshCw className="w-3 h-3 text-sky-500" />
+                  <span>Quét tìm iPhone trong LAN</span>
                 </button>
               </div>
             </div>

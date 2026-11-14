@@ -179,6 +179,7 @@ public struct HostDashboardView: View {
                 }
             }
             .onAppear {
+                UIDevice.current.isBatteryMonitoringEnabled = true
                 checkPermissions()
             }
         }
@@ -187,6 +188,55 @@ public struct HostDashboardView: View {
     private func refreshPin() {
         let randomNum = Int.random(in: 100000...999999)
         pairingPin = String(randomNum)
+    }
+    
+    /// Trả về thông số phần cứng thực tế của iPhone (Tuyệt đối không bịa đặt số liệu)
+    public static func getRealHardwareInfo() -> (name: String, model: String, os: String, battery: Float, isCharging: Bool, totalStorage: Int64, freeStorage: Int64) {
+        UIDevice.current.isBatteryMonitoringEnabled = true
+        let name = UIDevice.current.name
+        let os = "iOS \(UIDevice.current.systemVersion)"
+        let battery = UIDevice.current.batteryLevel
+        let isCharging = UIDevice.current.batteryState == .charging || UIDevice.current.batteryState == .full
+        
+        // Nhận diện mã máy thực tế từ utsname
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        let machineMirror = Mirror(reflecting: systemInfo.machine)
+        let identifier = machineMirror.children.reduce("") { identifier, element in
+            guard let value = element.value as? Int8, value != 0 else { return identifier }
+            return identifier + String(UnicodeScalar(UInt8(value)))
+        }
+        
+        let model: String
+        switch identifier {
+        case "iPhone13,1": model = "iPhone 12 mini"
+        case "iPhone13,2": model = "iPhone 12"
+        case "iPhone13,3": model = "iPhone 12 Pro"
+        case "iPhone13,4": model = "iPhone 12 Pro Max"
+        case "iPhone14,4": model = "iPhone 13 mini"
+        case "iPhone14,5": model = "iPhone 13"
+        case "iPhone14,2": model = "iPhone 13 Pro"
+        case "iPhone14,3": model = "iPhone 13 Pro Max"
+        case "iPhone14,7": model = "iPhone 14"
+        case "iPhone14,8": model = "iPhone 14 Plus"
+        case "iPhone15,2": model = "iPhone 14 Pro"
+        case "iPhone15,3": model = "iPhone 14 Pro Max"
+        case "iPhone15,4": model = "iPhone 15"
+        case "iPhone15,5": model = "iPhone 15 Plus"
+        case "iPhone16,1": model = "iPhone 15 Pro"
+        case "iPhone16,2": model = "iPhone 15 Pro Max"
+        case "x86_64", "arm64": model = "iPhone 12 (Simulator)"
+        default: model = "iPhone (\(identifier))"
+        }
+        
+        var totalBytes: Int64 = 0
+        var freeBytes: Int64 = 0
+        if let attrs = try? FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory()) {
+            totalBytes = (attrs[.systemSize] as? NSNumber)?.int64Value ?? 0
+            freeBytes = (attrs[.systemFreeSize] as? NSNumber)?.int64Value ?? 0
+        }
+        
+        return (name, model, os, battery, isCharging, totalBytes, freeBytes)
     }
     
     private func checkPermissions() {
