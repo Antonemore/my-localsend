@@ -21,6 +21,21 @@ export interface PhotoItem {
   duration_seconds?: number;
   file_size_bytes: number;
   is_favorite: boolean;
+  is_live_photo?: boolean;
+  thumbnail_url?: string;
+  chat_source?: string; // Ví dụ: 'Zalo: Nhóm Dự Án', 'Telegram: IT Team'
+}
+
+export interface ChatChannel {
+  id: string;
+  name: string;
+  app: 'zalo' | 'telegram' | 'whatsapp';
+  is_group: boolean;
+  member_count?: number;
+  description: string;
+  photo_count: number;
+  file_count: number;
+  total_size_bytes: number;
 }
 
 export interface FileNode {
@@ -32,4 +47,6 @@ export interface FileNode {
   children?: FileNode[];
 }
 
-export type NavTab = 'photos' | 'files' | 'clipboard' | 'backups' | 'settings';
+export type NavTab = 'photos' | 'chats' | 'cleaner' | 'files' | 'clipboard' | 'settings';
+export type ViewMode = 'grid-large' | 'grid-small' | 'view-detail';
+export type AppTheme = 'itunes' | 'dark';

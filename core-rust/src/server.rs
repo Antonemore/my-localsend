@@ -45,6 +45,7 @@ pub fn create_router(state: AppState) -> Router {
         .route("/api/v1/photos", get(handle_list_photos))
         .route("/api/v1/photos/:id/thumb", get(handle_get_photo_thumb))
         .route("/api/v1/photos/:id/original", get(handle_get_photo_original))
+        .route("/api/v1/photos/:id/live-video", get(handle_get_photo_live_video))
         // API Filesystem Explorer
         .route("/api/v1/files/tree", get(handle_file_tree))
         .route("/api/v1/files/download", get(handle_file_download))
@@ -137,6 +138,22 @@ async fn handle_get_photo_original(
         .header(
             header::CONTENT_DISPOSITION,
             format!("attachment; filename=\"{}.heic\"", id),
+        )
+        .body(Body::from(vec![0u8; 1024]))
+        .unwrap()
+}
+
+/// Tải video 3 giây chuyển động đi kèm Apple Live Photo (.mov)
+async fn handle_get_photo_live_video(
+    Path(id): Path<String>,
+    State(_state): State<AppState>,
+) -> Response {
+    Response::builder()
+        .status(StatusCode::OK)
+        .header(header::CONTENT_TYPE, "video/quicktime")
+        .header(
+            header::CONTENT_DISPOSITION,
+            format!("attachment; filename=\"{}.mov\"", id),
         )
         .body(Body::from(vec![0u8; 1024]))
         .unwrap()

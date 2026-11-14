@@ -103,12 +103,13 @@ pub async fn fetch_photos(
         .map_err(|e| format!("Lỗi parse photos: {}", e))
 }
 
-/// Xuất hàng loạt ảnh/video về thư mục trên PC
+/// Xuất hàng loạt ảnh/video về thư mục trên PC (Hỗ trợ Live Photo: ảnh tĩnh + MOV 3s song song)
 #[tauri::command]
 pub async fn export_photos_to_pc(
     photo_ids: Vec<String>,
     target_directory: String,
     transcode_to_jpg: bool,
+    include_live_video: Option<bool>,
     state: State<'_, DesktopClientState>,
 ) -> Result<usize, String> {
     let ip = state
@@ -125,6 +126,7 @@ pub async fn export_photos_to_pc(
             .map_err(|e| e.to_string())?;
     }
 
+    let with_live_mov = include_live_video.unwrap_or(true);
     let mut successful_exports = 0;
     for id in photo_ids {
         let url = format!(
@@ -140,6 +142,21 @@ pub async fn export_photos_to_pc(
                 if let Ok(mut f) = File::create(&file_path).await {
                     let _ = f.write_all(&bytes).await;
                     successful_exports += 1;
+                }
+            }
+        }
+
+        // Nếu là Live Photo và người dùng chọn xuất kèm Video 3s
+        if with_live_mov {
+            let mov_url = format!("https://{}:53318/api/v1/photos/{}/live-video", ip, id);
+            if let Ok(res_mov) = state.http_client.get(&mov_url).send().await {
+                if res_mov.status().is_success() {
+                    let mov_path = dest_dir.join(format!("{}.mov", id));
+                    if let Ok(mov_bytes) = res_mov.bytes().await {
+                        if let Ok(mut mf) = File::create(&mov_path).await {
+                            let _ = mf.write_all(&mov_bytes).await;
+                        }
+                    }
                 }
             }
         }
