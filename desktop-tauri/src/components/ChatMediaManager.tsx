@@ -75,38 +75,70 @@ export const ChatMediaManager: React.FC<ChatMediaManagerProps> = ({ onExportChan
   });
 
   return (
-    <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-950 text-slate-100">
-      <header className="h-16 border-b border-slate-800/80 px-6 flex items-center justify-between bg-slate-900/50 backdrop-blur shrink-0">
+    <div
+      className="flex-1 flex flex-col h-screen overflow-hidden transition-colors"
+      style={{
+        backgroundColor: 'var(--bg-main)',
+        color: 'var(--text-primary)',
+      }}
+    >
+      <header
+        className="h-16 border-b px-6 flex items-center justify-between shrink-0"
+        style={{
+          backgroundColor: 'var(--bg-card)',
+          borderColor: 'var(--border-color)',
+        }}
+      >
         <div>
           <h1 className="text-base font-bold tracking-tight">Quản lý Dữ liệu Chat (Zalo / Telegram / WhatsApp)</h1>
-          <p className="text-xs text-slate-400">Tự động phân loại theo Nhóm chat và Đối tác - Không bị đổ đồng dữ liệu</p>
+          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+            Tự động phân loại theo Nhóm chat và Đối tác - Không bị đổ đồng dữ liệu
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-slate-800/70 border border-slate-700/70 rounded-lg px-3 py-1.5 text-xs">
+          <div
+            className="flex items-center gap-2 border rounded-lg px-3 py-1.5 text-xs"
+            style={{
+              backgroundColor: 'var(--bg-sidebar)',
+              borderColor: 'var(--border-color)',
+            }}
+          >
             <Search className="w-3.5 h-3.5 text-slate-400" />
             <input
               type="text"
               placeholder="Tìm theo tên nhóm hoặc đối tác..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none text-slate-200 placeholder-slate-500 w-52"
+              className="bg-transparent border-none outline-none w-52 text-xs"
+              style={{ color: 'var(--text-primary)' }}
             />
           </div>
         </div>
       </header>
 
       {/* Filter Chips */}
-      <div className="h-11 border-b border-slate-800/60 px-6 flex items-center gap-2 bg-slate-900/30 text-xs shrink-0">
+      <div
+        className="h-11 border-b px-6 flex items-center gap-2 text-xs shrink-0"
+        style={{
+          backgroundColor: 'var(--bg-card)',
+          borderColor: 'var(--border-color)',
+        }}
+      >
         {(['all', 'zalo', 'telegram', 'whatsapp'] as const).map((app) => (
           <button
             key={app}
             onClick={() => setFilterApp(app)}
-            className={`px-3 py-1 rounded-full text-xs transition-all ${
+            className={`px-3 py-1 rounded-full text-xs transition-all border ${
               filterApp === app
-                ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40 font-semibold'
-                : 'bg-slate-800/60 text-slate-400 hover:text-slate-200 border border-slate-700/40'
+                ? 'font-semibold'
+                : 'opacity-70 hover:opacity-100'
             }`}
+            style={{
+              backgroundColor: filterApp === app ? 'rgba(0, 113, 227, 0.12)' : 'var(--bg-sidebar)',
+              color: filterApp === app ? 'var(--accent)' : 'var(--text-secondary)',
+              borderColor: filterApp === app ? 'var(--accent)' : 'var(--border-color)',
+            }}
           >
             {app === 'all' && `Tất cả (${MOCK_CHANNELS.length})`}
             {app === 'zalo' && '💬 Zalo'}
@@ -121,36 +153,47 @@ export const ChatMediaManager: React.FC<ChatMediaManagerProps> = ({ onExportChan
         {filtered.map((channel) => (
           <div
             key={channel.id}
-            className="p-4 rounded-xl border border-slate-800/80 bg-slate-900/40 hover:bg-slate-800/50 hover:border-sky-500/50 transition-all flex items-center justify-between gap-4"
+            className="p-4 rounded-xl border transition-all flex items-center justify-between gap-4 shadow-sm"
+            style={{
+              backgroundColor: 'var(--bg-card)',
+              borderColor: 'var(--border-color)',
+            }}
           >
             <div className="flex items-center gap-4 flex-1">
               <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg ${
-                channel.app === 'zalo' ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30' :
-                channel.app === 'telegram' ? 'bg-sky-500/20 text-sky-400 border border-sky-400/30' :
-                'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+                channel.app === 'zalo' ? 'bg-blue-600/15 text-blue-500 border border-blue-500/30' :
+                channel.app === 'telegram' ? 'bg-sky-500/15 text-sky-500 border border-sky-400/30' :
+                'bg-emerald-600/15 text-emerald-500 border border-emerald-500/30'
               }`}>
                 {channel.is_group ? <Users className="w-5 h-5" /> : <User className="w-5 h-5" />}
               </div>
 
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm text-slate-100">{channel.name}</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/50">
+                  <span className="font-bold text-sm">{channel.name}</span>
+                  <span
+                    className="text-[10px] px-2 py-0.5 rounded-full border"
+                    style={{
+                      backgroundColor: 'var(--bg-sidebar)',
+                      borderColor: 'var(--border-color)',
+                      color: 'var(--text-secondary)',
+                    }}
+                  >
                     {channel.is_group ? `Nhóm (${channel.member_count} thành viên)` : 'Đối tác riêng'}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-1">{channel.description}</p>
-                <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>{channel.description}</p>
+                <div className="flex items-center gap-4 mt-2 text-xs" style={{ color: 'var(--text-muted)' }}>
                   <span className="flex items-center gap-1">
-                    <ImageIcon className="w-3.5 h-3.5 text-amber-400" />
+                    <ImageIcon className="w-3.5 h-3.5 text-amber-500" />
                     <span>{channel.photo_count} ảnh & video</span>
                   </span>
                   <span className="flex items-center gap-1">
-                    <FileText className="w-3.5 h-3.5 text-sky-400" />
+                    <FileText className="w-3.5 h-3.5 text-sky-500" />
                     <span>{channel.file_count} tệp tài liệu</span>
                   </span>
-                  <span className="flex items-center gap-1 text-slate-300 font-mono">
-                    <HardDrive className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="flex items-center gap-1 font-mono font-medium" style={{ color: 'var(--text-primary)' }}>
+                    <HardDrive className="w-3.5 h-3.5 text-emerald-500" />
                     <span>{(channel.total_size_bytes / (1024 * 1024)).toFixed(0)} MB</span>
                   </span>
                 </div>
@@ -159,7 +202,7 @@ export const ChatMediaManager: React.FC<ChatMediaManagerProps> = ({ onExportChan
 
             <button
               onClick={() => onExportChannel(channel)}
-              className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-white shadow-md shadow-sky-500/20 transition-all shrink-0"
+              className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-white shadow-sm transition-all shrink-0"
             >
               <Download className="w-4 h-4" />
               <span>Sao lưu về PC</span>

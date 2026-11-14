@@ -5,8 +5,8 @@ import UniformTypeIdentifiers
 public struct HostDashboardView: View {
     @State private var pairingPin: String = "849201"
     @State private var isServerRunning: Bool = true
-    @State private var connectedClientName: String? = "Antigravity Workstation (Windows)"
-    @State private var currentSpeedMBps: Double = 48.5
+    @State private var connectedClientName: String? = nil
+    @State private var currentSpeedMBps: Double = 0.0
     @State private var photoPermissionGranted: Bool = false
     @State private var showDocumentPicker: Bool = false
     @State private var selectedFoldersCount: Int = 1
@@ -118,8 +118,15 @@ public struct HostDashboardView: View {
                             }
                             Spacer()
                             if photoPermissionGranted {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.green)
+                                HStack(spacing: 8) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                    Button("Đổi quyền") {
+                                        PhotoKitService.shared.openSystemSettings()
+                                    }
+                                    .font(.caption2)
+                                    .buttonStyle(.bordered)
+                                }
                             } else {
                                 Button("Cấp quyền") {
                                     requestPhotosAccess()

@@ -44,16 +44,35 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-950 text-slate-100 dark:bg-slate-950">
+    <div
+      className="flex-1 flex flex-col h-screen overflow-hidden transition-colors"
+      style={{
+        backgroundColor: 'var(--bg-main)',
+        color: 'var(--text-primary)',
+      }}
+    >
       {/* Top Action Bar */}
-      <header className="h-16 border-b border-slate-800/80 px-6 flex items-center justify-between bg-slate-900/50 backdrop-blur shrink-0">
+      <header
+        className="h-16 border-b px-6 flex items-center justify-between shrink-0"
+        style={{
+          backgroundColor: 'var(--bg-card)',
+          borderColor: 'var(--border-color)',
+        }}
+      >
         <div className="flex items-center gap-4">
           <h1 className="text-base font-bold tracking-tight">Thư viện Ảnh & Video</h1>
-          <span className="text-xs text-slate-400 bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-700/60">
+          <span
+            className="text-xs px-2.5 py-0.5 rounded-full border"
+            style={{
+              backgroundColor: 'var(--bg-sidebar)',
+              borderColor: 'var(--border-color)',
+              color: 'var(--text-secondary)',
+            }}
+          >
             {filteredPhotos.length} mục
           </span>
           {selectedIds.size > 0 && (
-            <span className="text-xs text-sky-400 font-semibold">
+            <span className="text-xs font-semibold text-sky-500">
               (Đã chọn {selectedIds.size})
             </span>
           )}
@@ -61,36 +80,49 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
 
         <div className="flex items-center gap-3">
           {/* Ô tìm kiếm */}
-          <div className="flex items-center gap-2 bg-slate-800/70 border border-slate-700/70 rounded-lg px-3 py-1.5 text-xs">
+          <div
+            className="flex items-center gap-2 border rounded-lg px-3 py-1.5 text-xs"
+            style={{
+              backgroundColor: 'var(--bg-sidebar)',
+              borderColor: 'var(--border-color)',
+            }}
+          >
             <Search className="w-3.5 h-3.5 text-slate-400" />
             <input
               type="text"
               placeholder="Tìm theo tên file, ngày..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none text-slate-200 placeholder-slate-500 w-44"
+              className="bg-transparent border-none outline-none w-44 text-xs"
+              style={{ color: 'var(--text-primary)' }}
             />
           </div>
 
           {/* View mode switcher */}
-          <div className="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700/60">
+          <div
+            className="flex items-center p-0.5 rounded-lg border"
+            style={{
+              backgroundColor: 'var(--bg-sidebar)',
+              borderColor: 'var(--border-color)',
+            }}
+          >
             <button
               onClick={() => setViewMode('grid-large')}
-              className={`p-1.5 rounded ${viewMode === 'grid-large' ? 'bg-sky-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+              className={`p-1.5 rounded transition-colors ${viewMode === 'grid-large' ? 'bg-sky-500 text-white' : 'opacity-70 hover:opacity-100'}`}
               title="Lưới lớn"
             >
               <LayoutGrid className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setViewMode('grid-small')}
-              className={`p-1.5 rounded ${viewMode === 'grid-small' ? 'bg-sky-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+              className={`p-1.5 rounded transition-colors ${viewMode === 'grid-small' ? 'bg-sky-500 text-white' : 'opacity-70 hover:opacity-100'}`}
               title="Lưới nhỏ"
             >
               <Grid3X3 className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setViewMode('view-detail')}
-              className={`p-1.5 rounded ${viewMode === 'view-detail' ? 'bg-sky-500 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+              className={`p-1.5 rounded transition-colors ${viewMode === 'view-detail' ? 'bg-sky-500 text-white' : 'opacity-70 hover:opacity-100'}`}
               title="Danh sách chi tiết"
             >
               <List className="w-3.5 h-3.5" />
@@ -99,7 +131,12 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
 
           <button
             onClick={selectAll}
-            className="text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-750 text-slate-300 transition-colors"
+            className="text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors"
+            style={{
+              backgroundColor: 'var(--bg-sidebar)',
+              borderColor: 'var(--border-color)',
+              color: 'var(--text-primary)',
+            }}
           >
             {selectedIds.size === filteredPhotos.length ? 'Bỏ chọn' : 'Chọn hết'}
           </button>
@@ -107,7 +144,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
           <button
             disabled={selectedIds.size === 0}
             onClick={() => onExportPhotos(Array.from(selectedIds), transcodeJpg, includeLiveVideo)}
-            className="flex items-center gap-1.5 text-xs font-semibold px-4 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 disabled:opacity-40 text-white shadow-md shadow-sky-500/20 transition-all"
+            className="flex items-center gap-1.5 text-xs font-semibold px-4 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 disabled:opacity-40 text-white shadow-sm transition-all"
           >
             <Download className="w-4 h-4" />
             <span>Xuất về PC ({selectedIds.size})</span>
@@ -116,17 +153,28 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
       </header>
 
       {/* Sub Bar: Filter chips & Live Photo options */}
-      <div className="h-11 border-b border-slate-800/60 px-6 flex items-center justify-between bg-slate-900/30 text-xs shrink-0">
+      <div
+        className="h-11 border-b px-6 flex items-center justify-between text-xs shrink-0"
+        style={{
+          backgroundColor: 'var(--bg-card)',
+          borderColor: 'var(--border-color)',
+        }}
+      >
         <div className="flex items-center gap-2">
           {['all', 'live', 'video', 'favorites'].map((type) => (
             <button
               key={type}
               onClick={() => setFilterType(type)}
-              className={`px-3 py-1 rounded-full text-xs transition-all ${
+              className={`px-3 py-1 rounded-full text-xs transition-all border ${
                 filterType === type
-                  ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40 font-semibold'
-                  : 'bg-slate-800/60 text-slate-400 hover:text-slate-200 border border-slate-700/40'
+                  ? 'font-semibold'
+                  : 'opacity-70 hover:opacity-100'
               }`}
+              style={{
+                backgroundColor: filterType === type ? 'rgba(0, 113, 227, 0.12)' : 'var(--bg-sidebar)',
+                color: filterType === type ? 'var(--accent)' : 'var(--text-secondary)',
+                borderColor: filterType === type ? 'var(--accent)' : 'var(--border-color)',
+              }}
             >
               {type === 'all' && 'Tất cả'}
               {type === 'live' && '🔘 Live Photos'}
@@ -136,23 +184,23 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
           ))}
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 cursor-pointer select-none text-slate-300">
+        <div className="flex items-center gap-4" style={{ color: 'var(--text-secondary)' }}>
+          <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={includeLiveVideo}
               onChange={(e) => setIncludeLiveVideo(e.target.checked)}
-              className="rounded bg-slate-900 border-slate-700 text-sky-500 focus:ring-0"
+              className="rounded text-sky-500"
             />
             <span>Live Photo: <b>Kèm Video MOV 3s</b></span>
           </label>
 
-          <label className="flex items-center gap-2 cursor-pointer select-none text-slate-300">
+          <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={transcodeJpg}
               onChange={(e) => setTranscodeJpg(e.target.checked)}
-              className="rounded bg-slate-900 border-slate-700 text-sky-500 focus:ring-0"
+              className="rounded text-sky-500"
             />
             <span>Đổi <b>HEIC ➔ JPG</b></span>
           </label>
@@ -162,51 +210,66 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
       {/* Grid Content */}
       <div className="flex-1 p-6 overflow-y-auto">
         {viewMode === 'view-detail' ? (
-          /* DANH SÁCH CHI TIẾT (LIST DETAIL VIEW) */
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden">
-            <div className="grid grid-cols-12 px-4 py-2.5 text-[11px] font-semibold text-slate-400 border-b border-slate-800 uppercase tracking-wider">
+          /* DANH SÁCH CHI TIẾT */
+          <div
+            className="border rounded-xl overflow-hidden shadow-sm"
+            style={{
+              backgroundColor: 'var(--bg-card)',
+              borderColor: 'var(--border-color)',
+            }}
+          >
+            <div
+              className="grid grid-cols-12 px-4 py-2.5 text-[11px] font-semibold border-b uppercase tracking-wider"
+              style={{
+                borderColor: 'var(--border-color)',
+                color: 'var(--text-muted)',
+              }}
+            >
               <span className="col-span-1">Chọn</span>
               <span className="col-span-5">Tên tệp</span>
               <span className="col-span-2">Định dạng</span>
               <span className="col-span-2">Dung lượng</span>
               <span className="col-span-2">Nguồn / Album</span>
             </div>
-            <div className="divide-y divide-slate-800/60">
+            <div>
               {filteredPhotos.map((item) => {
                 const isSelected = selectedIds.has(item.id);
                 return (
                   <div
                     key={item.id}
                     onClick={() => toggleSelect(item.id)}
-                    className={`grid grid-cols-12 px-4 py-2.5 items-center text-xs cursor-pointer transition-colors ${
-                      isSelected ? 'bg-sky-500/10 text-sky-300' : 'hover:bg-slate-800/40 text-slate-300'
-                    }`}
+                    className="grid grid-cols-12 px-4 py-2.5 items-center text-xs cursor-pointer border-b transition-colors"
+                    style={{
+                      borderColor: 'var(--border-color)',
+                      backgroundColor: isSelected ? 'rgba(0, 113, 227, 0.08)' : 'transparent',
+                    }}
                   >
                     <span className="col-span-1">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => {}}
-                        className="rounded bg-slate-900 border-slate-700 text-sky-500"
+                        className="rounded text-sky-500"
                       />
                     </span>
-                    <span className="col-span-5 font-medium flex items-center gap-2">
+                    <span className="col-span-5 font-medium flex items-center gap-2.5">
                       <img
                         src={item.thumbnail_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=100&auto=format&fit=crop&q=80'}
                         alt={item.filename}
-                        className="w-8 h-8 rounded object-cover border border-slate-700"
+                        className="w-9 h-9 rounded-md object-cover border"
+                        style={{ borderColor: 'var(--border-color)' }}
                       />
-                      <span>{item.filename}</span>
+                      <span className="truncate">{item.filename}</span>
                     </span>
                     <span className="col-span-2 flex items-center gap-1.5">
-                      {item.is_live_photo && <span className="px-1.5 py-0.5 rounded text-[10px] bg-sky-500/20 text-sky-400 font-semibold">LIVE</span>}
-                      {item.media_type === 'video' && <span className="px-1.5 py-0.5 rounded text-[10px] bg-rose-500/20 text-rose-400 font-semibold">VIDEO</span>}
-                      <span className="text-slate-400">{item.filename.split('.').pop()?.toUpperCase()}</span>
+                      {item.is_live_photo && <span className="px-1.5 py-0.5 rounded text-[10px] bg-sky-500/15 text-sky-500 font-semibold">LIVE</span>}
+                      {item.media_type === 'video' && <span className="px-1.5 py-0.5 rounded text-[10px] bg-rose-500/15 text-rose-500 font-semibold">VIDEO</span>}
+                      <span style={{ color: 'var(--text-muted)' }}>{item.filename.split('.').pop()?.toUpperCase()}</span>
                     </span>
-                    <span className="col-span-2 text-slate-400 font-mono">
+                    <span className="col-span-2 font-mono text-xs" style={{ color: 'var(--text-secondary)' }}>
                       {(item.file_size_bytes / (1024 * 1024)).toFixed(1)} MB
                     </span>
-                    <span className="col-span-2 text-slate-400">
+                    <span className="col-span-2 truncate text-xs" style={{ color: 'var(--text-secondary)' }}>
                       {item.chat_source || 'Camera Roll'}
                     </span>
                   </div>
@@ -215,7 +278,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
             </div>
           </div>
         ) : (
-          /* LƯỚI ẢNH (LARGE & SMALL GRID) */
+          /* LƯỚI ẢNH */
           <div className={viewMode === 'grid-large'
             ? 'grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3'
             : 'grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-2'
@@ -226,11 +289,11 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
                 <div
                   key={item.id}
                   onClick={() => toggleSelect(item.id)}
-                  className={`group relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all ${
-                    isSelected
-                      ? 'border-sky-500 ring-2 ring-sky-500/30'
-                      : 'border-transparent hover:border-slate-600 bg-slate-900'
-                  }`}
+                  className="group relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all shadow-sm"
+                  style={{
+                    backgroundColor: 'var(--bg-card)',
+                    borderColor: isSelected ? 'var(--accent)' : 'transparent',
+                  }}
                 >
                   <img
                     src={item.thumbnail_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&auto=format&fit=crop&q=80'}
@@ -240,7 +303,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
 
                   {/* Live Photo Badge */}
                   {item.is_live_photo && (
-                    <div className="absolute top-2 left-2 flex items-center gap-1 bg-sky-600/80 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-bold text-white shadow">
+                    <div className="absolute top-2 left-2 flex items-center gap-1 bg-sky-600/85 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-bold text-white shadow">
                       <Aperture className="w-2.5 h-2.5" />
                       <span>LIVE</span>
                     </div>
@@ -255,7 +318,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onExportPhotos }) 
                   )}
 
                   {/* Time Badge */}
-                  <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur px-1 py-0.5 rounded text-[9px] text-slate-300">
+                  <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur px-1 py-0.5 rounded text-[9px] text-white">
                     {item.filename}
                   </div>
 

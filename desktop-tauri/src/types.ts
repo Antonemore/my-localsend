@@ -9,7 +9,11 @@ export interface DeviceInfo {
   storage_free_bytes: number;
   photo_count: number;
   video_count: number;
+  ip_address?: string;
+  tls_fingerprint?: string;
 }
+
+export type ConnectionState = 'disconnected' | 'scanning' | 'pairing_required' | 'connected_live';
 
 export interface PhotoItem {
   id: string;
@@ -23,7 +27,7 @@ export interface PhotoItem {
   is_favorite: boolean;
   is_live_photo?: boolean;
   thumbnail_url?: string;
-  chat_source?: string; // Ví dụ: 'Zalo: Nhóm Dự Án', 'Telegram: IT Team'
+  chat_source?: string;
 }
 
 export interface ChatChannel {
