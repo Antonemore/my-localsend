@@ -1,5 +1,6 @@
 import SwiftUI
 import Photos
+import UniformTypeIdentifiers
 
 public struct HostDashboardView: View {
     @State private var pairingPin: String = "849201"
@@ -135,7 +136,7 @@ public struct HostDashboardView: View {
                         HStack {
                             Image(systemName: "folder.badge.plus")
                                 .font(.title2)
-                                .foregroundColor(.amber)
+                                .foregroundColor(.orange)
                                 .frame(width: 36)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Thư mục Tệp mở rộng")

@@ -2,6 +2,7 @@ import Foundation
 import Photos
 import CoreImage
 import UIKit
+import AVFoundation
 
 /// Cấu trúc đại diện cho một mục Photo/Video từ PhotoKit truyền sang Rust/Web
 public struct PhotoMetadata: Codable, Identifiable {
