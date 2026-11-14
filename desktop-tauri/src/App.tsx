@@ -237,7 +237,7 @@ export const App: React.FC = () => {
 
         {activeTab === 'files' && (
           <FileExplorer
-            initialTree={MOCK_FILES}
+            rootNode={MOCK_FILES}
             onUploadFiles={handleUploadFiles}
           />
         )}
@@ -330,3 +330,5 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
+export default App;
