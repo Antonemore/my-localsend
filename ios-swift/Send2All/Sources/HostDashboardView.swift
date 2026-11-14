@@ -46,7 +46,7 @@ public struct HostDashboardView: View {
                             .multilineTextAlignment(.center)
                     }
                     .padding(20)
-                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .background(Color(uiColor: .secondarySystemGroupedBackground))
                     .cornerRadius(20)
                     .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
 
@@ -91,7 +91,7 @@ public struct HostDashboardView: View {
                         }
                     }
                     .padding(20)
-                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .background(Color(uiColor: .secondarySystemGroupedBackground))
                     .cornerRadius(20)
                     .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
 
@@ -156,13 +156,13 @@ public struct HostDashboardView: View {
                         .padding(.vertical, 4)
                     }
                     .padding(20)
-                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .background(Color(uiColor: .secondarySystemGroupedBackground))
                     .cornerRadius(20)
                     .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
                 }
                 .padding()
             }
-            .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
+            .background(Color(uiColor: .systemGroupedBackground).ignoresSafeArea())
             .navigationTitle("Send2All Host")
             .sheet(isPresented: $showDocumentPicker) {
                 FolderPickerView { url in

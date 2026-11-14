@@ -1,6 +1,5 @@
 import Foundation
 import Photos
-import CoreImage
 import UIKit
 import AVFoundation
 
@@ -21,7 +20,6 @@ public final class PhotoKitService: NSObject {
     public static let shared = PhotoKitService()
     
     private let imageManager = PHCachingImageManager.default()
-    private let ciContext = CIContext(options: [.useSoftwareRenderer: false])
     
     private override init() {
         super.init()
@@ -149,10 +147,9 @@ public final class PhotoKitService: NSObject {
                 let isHeic = (uti?.contains("heic") ?? false) || originalFilename.uppercased().hasSuffix(".HEIC")
                 
                 if isHeic && convertHeicToJpeg {
-                    // Chuyển đổi HEIC sang JPEG tức thời bằng GPU CoreImage
-                    if let ciImage = CIImage(data: rawData),
-                       let colorSpace = CGColorSpace(name: CGColorSpace.sRGB),
-                       let jpegData = self.ciContext.jpegRepresentation(of: ciImage, colorSpace: colorSpace, options: [kCGImageDestinationLossyFactor as CIImageRepresentationOption: 0.9]) {
+                    // Chuyển đổi HEIC sang JPEG tức thời
+                    if let uiImage = UIImage(data: rawData),
+                       let jpegData = uiImage.jpegData(compressionQuality: 0.85) {
                         let newFilename = (originalFilename as NSString).deletingPathExtension + ".jpg"
                         continuation.resume(returning: (jpegData, "image/jpeg", newFilename))
                         return

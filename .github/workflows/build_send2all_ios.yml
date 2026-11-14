@@ -25,21 +25,34 @@ jobs:
           swiftc -sdk "$SDK_PATH" \
             -target arm64-apple-ios16.0 \
             -parse-as-library \
+            -framework Foundation \
+            -framework UIKit \
+            -framework SwiftUI \
+            -framework Photos \
+            -framework AVFoundation \
+            -framework UniformTypeIdentifiers \
+            -Xlinker -rpath -Xlinker @executable_path/Frameworks \
             Sources/*.swift \
-            -o Send2All
+            -o Send2All 2>&1 | tee build.log
           
           # Đóng gói cấu trúc ứng dụng iOS .app
           mkdir -p Payload/Send2All.app
           mv Send2All Payload/Send2All.app/
           cp Info.plist Payload/Send2All.app/
           
+          # Ad-hoc sign bundle
+          codesign --force --deep --sign - Payload/Send2All.app || true
+          
           # Đóng gói thành file .ipa chuẩn
           zip -qr Send2All-iOS.ipa Payload
           rm -rf Payload
 
       - name: Upload Send2All IPA Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Send2All-iOS-IPA
-          path: ios-swift/Send2All/Send2All-iOS.ipa
+          path: |
+            ios-swift/Send2All/Send2All-iOS.ipa
+            ios-swift/Send2All/build.log
           retention-days: 7
