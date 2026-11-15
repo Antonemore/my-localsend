@@ -67,9 +67,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           style={{ borderColor: 'var(--border-color)' }}
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center font-bold text-white shadow-md shadow-sky-500/20">
-              2
-            </div>
+            <img
+              src="/logo.png"
+              alt="Send2All"
+              className="w-8 h-8 rounded-full object-contain shadow-md border border-amber-500/30"
+            />
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-bold tracking-tight text-sm">Send2All</span>
