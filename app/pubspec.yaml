@@ -1,4 +1,4 @@
-name: send2all
+name: localsend_app
 description: Send2All - Cross-platform wireless transfer and device manager
 homepage: https://github.com/Antonemore/my-localsend
 publish_to: "none"

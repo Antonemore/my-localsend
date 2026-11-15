@@ -28,7 +28,11 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
-      - name: Install dependencies
+      - name: Install dependencies (isolates)
+        working-directory: packages/localsend_isolates
+        run: flutter pub get
+
+      - name: Install dependencies (app)
         working-directory: app
         run: flutter pub get
 
@@ -42,12 +46,18 @@ jobs:
         run: |
           mkdir -p Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
-          zip -qr LocalSend-Custom-iOS.ipa Payload
+          zip -qr Send2All-v1.4.0-iOS-RealEngine.ipa Payload
           rm -rf Payload
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LocalSend-Custom-iOS-IPA
-          path: app/LocalSend-Custom-iOS.ipa
+          name: Send2All-iOS-IPA
+          path: app/Send2All-v1.4.0-iOS-RealEngine.ipa
           retention-days: 7
+
+      - name: Upload to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload v1.4.0 app/Send2All-v1.4.0-iOS-RealEngine.ipa --clobber || true

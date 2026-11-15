@@ -2,6 +2,9 @@ name: Build windows exe (unsigned)
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 env:
   FLUTTER_VERSION: "3.47.9"
@@ -44,7 +47,11 @@ jobs:
           & $makepri.FullName new /pr support\build\msix\content /cf support\build\msix\priconfig.xml /mn support\build\msix\content\AppxManifest.xml /of support\build\msix\content\resources.pri /o
           & 'C:\Program Files (x86)\Windows Kits\10\App Certification Kit\makeappx.exe' pack /o /d support\build\msix\content /nv /p app\windows\localsend_msix_helper.msix
 
-      - name: Dependencies
+      - name: Dependencies (isolates)
+        working-directory: packages/localsend_isolates
+        run: flutter pub get
+
+      - name: Dependencies (app)
         working-directory: app
         run: flutter pub get
 
@@ -72,9 +79,15 @@ jobs:
             Rename-Item -Path "${{ runner.temp }}\inno-result\localsend.exe" -NewName "Send2All-v${{ needs.build.outputs.version }}-Windows-Setup.exe"
           }
 
-      - name: Upload installer
+      - name: Upload installer Artifact
         uses: actions/upload-artifact@v6
         with:
           name: Send2All-Windows-Setup-v${{ needs.build.outputs.version }}
           path: ${{ runner.temp }}\inno-result\Send2All-v${{ needs.build.outputs.version }}-Windows-Setup.exe
           if-no-files-found: error
+
+      - name: Upload to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload v1.4.0 "${{ runner.temp }}\inno-result\Send2All-v${{ needs.build.outputs.version }}-Windows-Setup.exe" --clobber || true
