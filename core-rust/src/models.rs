@@ -97,3 +97,29 @@ pub enum WsEvent {
     PhotoLibraryChanged { new_items: u32 },
     TransferProgress { file_id: String, progress: f64, speed_bps: u64 },
 }
+
+/// Dữ liệu Snapshot danh mục tệp theo yêu cầu (On-Demand Catalog)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SnapshotResponse {
+    pub device: DeviceInfo,
+    pub photos: Vec<PhotoItem>,
+    pub files: Vec<FileNode>,
+    pub timestamp: DateTime<Utc>,
+    pub session_token: String,
+}
+
+/// Lệnh thực thi chuyển tệp theo lô đã chọn (Batch Transfer)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BatchTransferRequest {
+    pub session_token: String,
+    pub file_ids: Vec<String>,
+    pub target_folder: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BatchTransferResponse {
+    pub success: bool,
+    pub total_files: usize,
+    pub total_bytes: u64,
+    pub message: String,
+}
