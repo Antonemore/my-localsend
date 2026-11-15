@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:localsend_app/gen/assets.gen.dart';
 
-class Send2AllLogo extends StatelessWidget {
+class LocalSendLogo extends StatelessWidget {
   final bool withText;
 
-  const Send2AllLogo({required this.withText});
+  const LocalSendLogo({required this.withText});
 
   @override
   Widget build(BuildContext context) {
@@ -35,3 +35,5 @@ class Send2AllLogo extends StatelessWidget {
     }
   }
 }
+
+typedef Send2AllLogo = LocalSendLogo;
