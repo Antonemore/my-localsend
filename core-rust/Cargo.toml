@@ -1,6 +1,6 @@
 [package]
 name = "send2all-core"
-version = "0.1.0"
+version = "1.4.0"
 edition = "2021"
 authors = ["Send2All Authors"]
 description = "Core network, discovery, pairing and streaming engine for Send2All"

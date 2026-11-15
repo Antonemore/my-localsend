@@ -71,7 +71,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               2
             </div>
             <div>
-              <span className="font-bold tracking-tight text-sm">Send2All</span>
+              <div className="flex items-center gap-1.5">
+                <span className="font-bold tracking-tight text-sm">Send2All</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-600 dark:text-sky-400 font-mono font-bold border border-sky-500/20">v1.4.0</span>
+              </div>
               <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Apple Bridge Pro</p>
             </div>
           </div>
