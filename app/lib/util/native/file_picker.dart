@@ -273,12 +273,17 @@ Future<void> _pickMedia(BuildContext context, Ref ref) async {
       );
     }
     try {
+      final List<CrossFile> allFiles = [];
+      for (final asset in result) {
+        final crossFiles = await CrossFileConverters.convertAssetEntityWithLivePhoto(asset);
+        allFiles.addAll(crossFiles);
+      }
       await ref
           .redux(selectedSendingFilesProvider)
           .dispatchAsync(
             AddFilesAction(
-              files: result,
-              converter: CrossFileConverters.convertAssetEntity,
+              files: allFiles,
+              converter: (CrossFile f) async => f,
             ),
           );
     } finally {

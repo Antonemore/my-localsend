@@ -99,7 +99,7 @@ class SettingsTab extends StatelessWidget {
                         : null,
                   ),
 
-                  /// Wayland does window position handling, so there's no need for it. See [https://github.com/localsend/localsend/issues/544]
+                  /// Wayland does window position handling, so there's no need for it. See [https://github.com/Antonemore/my-localsend/issues/544]
                   if (vm.advanced && checkPlatformIsNotWaylandDesktop())
                     _BooleanEntry(
                       label: defaultTargetPlatform == TargetPlatform.windows
@@ -550,7 +550,7 @@ class SettingsTab extends StatelessWidget {
                   buttonLabel: t.general.open,
                   onTap: () async {
                     await launchUrl(
-                      Uri.parse('https://localsend.org/privacy'),
+                      Uri.parse('https://github.com/Antonemore/my-localsend'),
                       mode: LaunchMode.externalApplication,
                     );
                   },
@@ -596,7 +596,7 @@ class SettingsTab extends StatelessWidget {
                   orElse: () => Container(),
                 ),
             Text(
-              '© ${DateTime.now().year} Tien Do Nam',
+              '© ${DateTime.now().year} Send2All Team',
               textAlign: TextAlign.center,
             ),
             Center(

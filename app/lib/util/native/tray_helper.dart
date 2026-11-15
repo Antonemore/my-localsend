@@ -72,7 +72,7 @@ Future<void> hideToTray() async {
   await windowManager.hide();
   if (checkPlatform([TargetPlatform.macOS])) {
     // This will crash on Windows
-    // https://github.com/localsend/localsend/issues/32
+    // https://github.com/Antonemore/my-localsend/issues/32
     await windowManager.setSkipTaskbar(true);
   }
 
@@ -89,7 +89,7 @@ Future<void> showFromTray() async {
   await windowManager.focus();
   if (checkPlatform([TargetPlatform.macOS])) {
     // This will crash on Windows
-    // https://github.com/localsend/localsend/issues/32
+    // https://github.com/Antonemore/my-localsend/issues/32
     await windowManager.setSkipTaskbar(false);
   }
 

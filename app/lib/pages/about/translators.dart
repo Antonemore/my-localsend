@@ -20,13 +20,13 @@ const _translators = <AppLocale, List<String>>{
     '@Limfjorden',
   ],
   AppLocale.de: [
-    'Tien Do Nam (@Tienisto)',
+    'Send2All Team (@Send2All)',
   ],
   AppLocale.el: [
     'Petros Kyladitis (@multipetros)',
   ],
   AppLocale.en: [
-    'Tien Do Nam (@Tienisto)',
+    'Send2All Team (@Send2All)',
     '@Coopydood',
   ],
   AppLocale.esEs: [

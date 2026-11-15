@@ -32,6 +32,57 @@ class CrossFileConverters {
     );
   }
 
+  /// Tự động tách Apple Live Photo thành 2 tệp riêng biệt: 1 ảnh tĩnh (.HEIC/.JPG) và 1 video (.MOV)
+  static Future<List<CrossFile>> convertAssetEntityWithLivePhoto(AssetEntity asset) async {
+    final List<CrossFile> results = [];
+    final file = await asset.originFile ?? await asset.file;
+    if (file == null) {
+      return results;
+    }
+
+    final metadata = await readFileMetadata(path: file.path);
+    final title = await asset.titleAsync;
+
+    // Dạng 1: Dạng Image
+    results.add(CrossFile(
+      name: title,
+      fileType: asset.type == AssetType.video ? FileType.video : FileType.image,
+      size: await file.length(),
+      thumbnail: null,
+      asset: asset,
+      path: file.path,
+      bytes: null,
+      lastModified: metadata?.modified,
+      lastAccessed: metadata?.accessed,
+    ));
+
+    // Dạng 2: Dạng Video (.MOV) cho Apple Live Photo
+    if (asset.isLivePhoto) {
+      try {
+        final videoFile = await asset.originFileWithSubtype ?? await asset.fileWithSubtype;
+        if (videoFile != null) {
+          final dotIndex = title.lastIndexOf('.');
+          final baseName = dotIndex != -1 ? title.substring(0, dotIndex) : title;
+          final videoTitle = '$baseName.mov';
+          final videoMeta = await readFileMetadata(path: videoFile.path);
+          results.add(CrossFile(
+            name: videoTitle,
+            fileType: FileType.video,
+            size: await videoFile.length(),
+            thumbnail: null,
+            asset: null,
+            path: videoFile.path,
+            bytes: null,
+            lastModified: videoMeta?.modified,
+            lastAccessed: videoMeta?.accessed,
+          ));
+        }
+      } catch (_) {}
+    }
+
+    return results;
+  }
+
   static Future<CrossFile> convertXFile(XFile file) async {
     final metadata = kIsWeb ? null : await readFileMetadata(path: file.path);
     return CrossFile(
