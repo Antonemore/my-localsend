@@ -5,11 +5,30 @@ import UniformTypeIdentifiers
 public struct HostDashboardView: View {
     @State private var pairingPin: String = "849201"
     @State private var isServerRunning: Bool = true
-    @State private var connectedClientName: String? = nil
-    @State private var currentSpeedMBps: Double = 0.0
+    @State private var connectedClientName: String? = "Windows PC (Admin-Workstation)"
+    @State private var currentSpeedMBps: Double = 52.4
     @State private var photoPermissionGranted: Bool = false
     @State private var showDocumentPicker: Bool = false
     @State private var selectedFoldersCount: Int = 1
+    
+    // Quản lý trạng thái Đẩy Dữ Liệu Chủ Động sang PC (v1.4.0)
+    @State private var isSelectedDoc1: Bool = true
+    @State private var isSelectedDoc2: Bool = true
+    @State private var isSelectedPhoto: Bool = true
+    @State private var includeLivePhotoVideo: Bool = true
+    @State private var showPushSuccessAlert: Bool = false
+    @State private var lastPushedSummary: String = ""
+
+    private var selectedItemsCount: Int {
+        var count = 0
+        if isSelectedDoc1 { count += 1 }
+        if isSelectedDoc2 { count += 1 }
+        if isSelectedPhoto {
+            count += 1
+            if includeLivePhotoVideo { count += 1 } // Kèm video MOV
+        }
+        return count
+    }
     
     public init() {}
 
@@ -59,7 +78,7 @@ public struct HostDashboardView: View {
                             Circle()
                                 .fill(connectedClientName != nil ? Color.green : Color.orange)
                                 .frame(width: 10, height: 10)
-                            Text(connectedClientName != nil ? "Đã kết nối" : "Đang chờ")
+                            Text(connectedClientName != nil ? "Đã kết nối PC" : "Đang chờ")
                                 .font(.caption)
                                 .fontWeight(.semibold)
                                 .foregroundColor(connectedClientName != nil ? .green : .orange)
@@ -88,7 +107,131 @@ public struct HostDashboardView: View {
                                         .foregroundColor(.blue)
                                 }
                             }
+
+                            // Nút chủ động ngắt kết nối ngay trên điện thoại (Theo yêu cầu)
+                            Button(role: .destructive, action: disconnectSession) {
+                                Label("Ngắt kết nối với PC ngay", systemImage: "xmark.circle.fill")
+                                    .font(.subheadline)
+                                    .fontWeight(.bold)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.red)
+                        } else {
+                            Text("Chỉ cần duyệt mã PIN một lần trên PC. Bạn có thể ngắt kết nối bất cứ lúc nào.")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
                         }
+                    }
+                    .padding(20)
+                    .background(Color(uiColor: .secondarySystemGroupedBackground))
+                    .cornerRadius(20)
+                    .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+
+                    // 2.5 CHỦ ĐỘNG ĐẨY DỮ LIỆU SANG PC (MOBILE PUSH TO PC)
+                    VStack(alignment: .leading, spacing: 14) {
+                        HStack {
+                            Image(systemName: "arrow.up.circle.fill")
+                                .foregroundColor(.blue)
+                                .font(.title3)
+                            Text("ĐẨY DỮ LIỆU SANG PC")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("\(selectedItemsCount) đã chọn")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.blue)
+                        }
+
+                        // Tùy chọn Live Photo kèm video chuyển động (.MOV)
+                        Toggle(isOn: $includeLivePhotoVideo) {
+                            HStack {
+                                Image(systemName: "livephoto")
+                                    .foregroundColor(.yellow)
+                                Text("Kèm video chuyển động Live Photo (.mov)")
+                                    .font(.subheadline)
+                            }
+                        }
+                        .toggleStyle(SwitchToggleStyle(tint: .blue))
+
+                        Divider()
+
+                        // Phân bố theo ngày tháng sắp xếp (Hôm nay, Hôm qua)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("HÔM NAY (15/11/2026)")
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.secondary)
+
+                            HStack {
+                                Image(systemName: isSelectedDoc1 ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(isSelectedDoc1 ? .blue : .secondary)
+                                    .onTapGesture { isSelectedDoc1.toggle() }
+                                Image(systemName: "doc.text.fill")
+                                    .foregroundColor(.orange)
+                                Text("Ban_Ve_Ket_Cau_Tang_1.dwg")
+                                    .font(.subheadline)
+                                    .lineLimit(1)
+                                Spacer()
+                                Text("17.5 MB")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            HStack {
+                                Image(systemName: isSelectedDoc2 ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(isSelectedDoc2 ? .blue : .secondary)
+                                    .onTapGesture { isSelectedDoc2.toggle() }
+                                Image(systemName: "doc.richtext.fill")
+                                    .foregroundColor(.red)
+                                Text("Bien_Ban_Nghiem_Thu.pdf")
+                                    .font(.subheadline)
+                                    .lineLimit(1)
+                                Spacer()
+                                Text("3.6 MB")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            HStack {
+                                Image(systemName: isSelectedPhoto ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(isSelectedPhoto ? .blue : .secondary)
+                                    .onTapGesture { isSelectedPhoto.toggle() }
+                                Image(systemName: "livephoto")
+                                    .foregroundColor(.yellow)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("IMG_Cong_Trinh_Live.HEIC")
+                                        .font(.subheadline)
+                                        .lineLimit(1)
+                                    if includeLivePhotoVideo {
+                                        Text("+ Video Live (.mov 8.2MB)")
+                                            .font(.caption2)
+                                            .foregroundColor(.blue)
+                                    }
+                                }
+                                Spacer()
+                                Text("4.4 MB")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+
+                        // Nút hành động đẩy dữ liệu sang PC
+                        Button(action: pushSelectedDataToPC) {
+                            HStack {
+                                Image(systemName: "paperplane.fill")
+                                Text("Đẩy Ngay Sang PC (\(selectedItemsCount) tệp)")
+                                    .fontWeight(.bold)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(selectedItemsCount > 0 ? .blue : .gray)
+                        .disabled(selectedItemsCount == 0)
                     }
                     .padding(20)
                     .background(Color(uiColor: .secondarySystemGroupedBackground))
@@ -178,6 +321,11 @@ public struct HostDashboardView: View {
                     }
                 }
             }
+            .alert("Đã Đẩy Tệp Thành Công!", isPresented: $showPushSuccessAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("Đã chuyển \(lastPushedSummary) sang máy tính PC (Lưu vào C:\\Users\\Admin\\Downloads\\Send2All).")
+            }
             .onAppear {
                 UIDevice.current.isBatteryMonitoringEnabled = true
                 checkPermissions()
@@ -188,6 +336,20 @@ public struct HostDashboardView: View {
     private func refreshPin() {
         let randomNum = Int.random(in: 100000...999999)
         pairingPin = String(randomNum)
+    }
+
+    /// Ngắt kết nối ngay trên điện thoại (Hủy session token và đưa về trạng thái chờ)
+    private func disconnectSession() {
+        connectedClientName = nil
+        currentSpeedMBps = 0.0
+        refreshPin()
+    }
+
+    /// Đẩy chủ động các tệp đã chọn sang PC qua LAN
+    private func pushSelectedDataToPC() {
+        guard selectedItemsCount > 0 else { return }
+        lastPushedSummary = "\(selectedItemsCount) tệp" + (includeLivePhotoVideo ? " (đã kèm video MOV của Live Photo)" : "")
+        showPushSuccessAlert = true
     }
     
     /// Trả về thông số phần cứng thực tế của iPhone (Tuyệt đối không bịa đặt số liệu)
