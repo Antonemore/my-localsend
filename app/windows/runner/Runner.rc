@@ -89,14 +89,14 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "Tien Do Nam" "\0"
-            VALUE "FileDescription", "LocalSend" "\0"
-            VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "localsend_app" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2022-2026 Tien Do Nam" "\0"
-            VALUE "OriginalFilename", "localsend_app.exe" "\0"
-            VALUE "ProductName", "LocalSend" "\0"
-            VALUE "ProductVersion", VERSION_AS_STRING "\0"
+            VALUE "CompanyName", "Send2All" "\0"
+            VALUE "FileDescription", "Send2All" "\0"
+            VALUE "FileVersion", "1.4.0" "\0"
+            VALUE "InternalName", "send2all" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 Send2All" "\0"
+            VALUE "OriginalFilename", "send2all.exe" "\0"
+            VALUE "ProductName", "Send2All" "\0"
+            VALUE "ProductVersion", "1.4.0" "\0"
         END
     END
     BLOCK "VarFileInfo"
