@@ -83,7 +83,7 @@ jobs:
           }
 
       - name: Upload installer Artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: Send2All-Windows-Setup-v${{ needs.build.outputs.version }}
           path: ${{ runner.temp }}\inno-result\Send2All-v${{ needs.build.outputs.version }}-Windows-Setup.exe
